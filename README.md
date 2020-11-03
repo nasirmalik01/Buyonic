@@ -1,16 +1,12 @@
-# buyonic
+#Buyonic (Landing Screen and SignIn)
 
-A new Flutter application.
+![Screenshot_20200919-115151](https://user-images.githubusercontent.com/50584809/98018667-a4f25b80-1e22-11eb-8dbe-9501253ff866.jpg)
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+![Screenshot_20200919-115149](https://user-images.githubusercontent.com/50584809/98018674-a6bc1f00-1e22-11eb-9590-0ab3f898526a.jpg)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![Screenshot_20200919-115146](https://user-images.githubusercontent.com/50584809/98018677-a754b580-1e22-11eb-9570-133e5f73055b.jpg)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+![Screenshot_20200919-115218](https://user-images.githubusercontent.com/50584809/98018684-a7ed4c00-1e22-11eb-8429-2ae07fb5e24f.jpg)
