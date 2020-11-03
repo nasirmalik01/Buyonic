@@ -1,4 +1,4 @@
-#Buyonic (Landing Screen and SignIn)
+Buyonic (Landing Screen and SignIn)
 
 ![Screenshot_20200919-115151](https://user-images.githubusercontent.com/50584809/98018667-a4f25b80-1e22-11eb-8dbe-9501253ff866.jpg)
 
