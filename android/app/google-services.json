@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "137940502569",
+    "firebase_url": "https://buyonic-55635.firebaseio.com",
+    "project_id": "buyonic-55635",
+    "storage_bucket": "buyonic-55635.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137940502569:android:f883d78d5e6ec58259f438",
+        "android_client_info": {
+          "package_name": "com.developmentlinkonix.buyonic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137940502569-vhoi1am738q9obaflrhvo6qmqeliuepc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2xWAbs7TO8eC8bCHoCXD4o3FDdktShwE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137940502569-vhoi1am738q9obaflrhvo6qmqeliuepc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
