@@ -1,4 +1,3 @@
-import 'package:buyonic/main.dart';
 import 'package:buyonic/screens/home_screen.dart';
 import 'package:buyonic/screens/signup_screen.dart';
 import 'package:buyonic/widgets/Widget.dart';
@@ -26,12 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   final facebookLogin = FacebookLogin();
+  bool obscureText =  true;
 
   // final String email = 'email';
   // final String google = 'google';
   // final String facebook = 'facebook';
 
-  Widget TextValues(
+  Widget textValues(
       {String text,
       String fontFamily,
       FontWeight fontWeight,
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void SnackbarError({String errorMessage}) {
+  void snackbarError({String errorMessage}) {
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text(
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin:
                               EdgeInsets.only(top: constraints.maxHeight * 0.3),
                           child: Center(
-                            child: TextValues(
+                            child: textValues(
                                 text: 'Buyonic',
                                 color: Color(0xFF1E319D),
                                 fontSize: 45,
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               left: constraints.maxWidth * 0.08),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: TextValues(
+                            child: textValues(
                                 text: 'LogIn to Your Account',
                                 fontFamily: 'Raleway',
                                 fontSize: 20,
@@ -185,11 +185,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                       elevation: 4,
                                       child: TextFormField(
                                         controller: passwordController,
-                                        obscureText: true,
+                                        obscureText: obscureText,
                                         decoration: InputDecoration(
                                           hintText: 'Password',
                                           hintStyle:
                                               TextStyle(fontFamily: 'Raleway'),
+                                          suffixIcon: IconButton(
+                                            icon: Icon(
+                                              !obscureText ? Icons.visibility : Icons.visibility_off
+                                            ),
+                                            onPressed: (){
+                                              setState(() {
+                                                obscureText = !obscureText;
+                                              });
+                                            },
+                                          ),
                                           border: InputBorder.none,
                                           enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
@@ -251,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           )
                                         : Padding(
                                             padding: const EdgeInsets.all(16.0),
-                                            child: TextValues(
+                                            child: textValues(
                                                 text: 'Sign In',
                                                 fontWeight: FontWeight.normal,
                                                 fontFamily: 'Raleway',
@@ -265,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      TextValues(
+                                      textValues(
                                           text: 'Don\'t have an account ?  ',
                                           fontSize: 15,
                                           fontFamily: 'Raleway',
@@ -298,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: constraints.maxHeight * 0.23,
                             child: Column(
                               children: <Widget>[
-                                TextValues(
+                                textValues(
                                   text: '- Or sign In with -',
                                   fontWeight: FontWeight.normal,
                                   fontFamily: 'Raleway',
@@ -355,31 +365,34 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      FirebaseUser _userDetails =
+      User _userDetails =
           (await _firebaseAuth.signInWithCredential(credential)).user;
 
-      DocumentSnapshot documentSnapshot = await Firestore.instance
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('Buyonic')
-          .document('Users')
+          .doc('Users')
           .collection('Google')
-          .document(_userDetails.uid)
+          .doc(_userDetails.uid)
           .get();
 
-      if (documentSnapshot.data == null) {
-        await Firestore.instance
+      if (documentSnapshot.data() == null) {
+        await FirebaseFirestore.instance
             .collection('Buyonic')
-            .document('Users')
+            .doc('Users')
             .collection('Google')
-            .document(_userDetails.uid)
-            .setData({
+            .doc(_userDetails.uid)
+            .set({
           'name': _userDetails.displayName,
-          'profile_pic': _userDetails.photoUrl,
+          'profile_pic': _userDetails.photoURL,
           'email': _userDetails.email,
-          'type' : 'Google'
+          'type' : 'Google',
+          'Address': 'Not set',
+          'DOB': 'Not set',
+          'Phone': 'Not set'
         });
       }
 
@@ -427,24 +440,27 @@ class _LoginScreenState extends State<LoginScreen> {
           email: authValues['email'], password: authValues['password']);
 
       if (newUser != null) {
-        FirebaseUser _user = await FirebaseAuth.instance.currentUser();
-        DocumentSnapshot documentSnapshot = await Firestore.instance
+        User _user =  FirebaseAuth.instance.currentUser;
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('Buyonic')
-            .document('Users')
+            .doc('Users')
             .collection('Email')
-            .document(_user.uid)
+            .doc(_user.uid)
             .get();
 
-        if (documentSnapshot.data == null) {
-          await Firestore.instance
+        if (documentSnapshot.data() == null) {
+          await FirebaseFirestore.instance
               .collection('Buyonic')
-              .document('Users')
+              .doc('Users')
               .collection('Email')
-              .document(_user.uid)
-              .setData({
-            'name': 'Not set',
+              .doc(_user.uid)
+              .set({
             'email': _user.email,
-            'type' : 'Email'
+            'type' : 'Email',
+            'Address': 'Not set',
+            'DOB': 'Not set',
+            'Phone': 'Not set',
+            'profile_pic' : 'http://med.gov.bz/wp-content/uploads/2020/08/dummy-profile-pic.jpg',
           });
         }
 
@@ -472,23 +488,23 @@ class _LoginScreenState extends State<LoginScreen> {
       if (e.message ==
           'There is no user record corresponding to this identifier. The user may have been deleted.') {
         _scaffoldKey.currentState.hideCurrentSnackBar();
-        SnackbarError(errorMessage: 'This Email is not Registered');
+        snackbarError(errorMessage: 'This Email is not Registered');
       }
       if (e.message ==
           'The password is invalid or the user does not have a password.') {
         _scaffoldKey.currentState.hideCurrentSnackBar();
-        SnackbarError(
+        snackbarError(
             errorMessage: 'You have entered wrong password. Try Again!');
       }
       if (e.message ==
           'A network error (such as timeout, interrupted connection or unreachable host) has occurred.') {
         _scaffoldKey.currentState.hideCurrentSnackBar();
-        SnackbarError(errorMessage: 'Connection Timeout. Try Again');
+        snackbarError(errorMessage: 'Connection Timeout. Try Again');
       }
 
       if (e.message == 'The email address is badly formatted.') {
         _scaffoldKey.currentState.hideCurrentSnackBar();
-        SnackbarError(errorMessage: 'Email Address is bady formatted');
+        snackbarError(errorMessage: 'Email Address is bady formatted');
       }
       return;
     }
@@ -503,33 +519,36 @@ class _LoginScreenState extends State<LoginScreen> {
       case FacebookLoginStatus.loggedIn:
         final token = result.accessToken.token;
         final graphResponse = await http.get(
-            'https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
-        final AuthCredential credential = FacebookAuthProvider.getCredential(
-          accessToken: result.accessToken.token,
+            'https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=$token');
+        final AuthCredential credential = FacebookAuthProvider.credential(
+          result.accessToken.token,
         );
         final profile = JSON.jsonDecode(graphResponse.body);
         print(profile);
-        final FirebaseUser _user =
+        final User _user =
             (await FirebaseAuth.instance.signInWithCredential(credential)).user;
         if(_user != null){
-          DocumentSnapshot documentSnapshot = await Firestore.instance
+          DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
               .collection('Buyonic')
-              .document('Users')
+              .doc('Users')
               .collection('Facebook')
-              .document(_user.uid)
+              .doc(_user.uid)
               .get();
 
-          if (documentSnapshot.data == null) {
-            await Firestore.instance
+          if (documentSnapshot.data() == null) {
+            await FirebaseFirestore.instance
                 .collection('Buyonic')
-                .document('Users')
+                .doc('Users')
                 .collection('Facebook')
-                .document(_user.uid)
-                .setData({
+                .doc(_user.uid)
+                .set({
               'name' : profile['name'],
               'email' : profile['email'],
               'profile_pic' : profile['picture']['data']['url'],
-              'type' : 'Facebook'
+              'type' : 'Facebook',
+              'Address': 'Not set',
+              'DOB': 'Not set',
+              'Phone': 'Not set'
             });
           }
         }

@@ -1,44 +1,45 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:buyonic/screens/home_screen.dart';
+import 'file:///C:/Users/nasir/AndroidStudioProjects/buyonic/lib/screens/profile_screen.dart';
 import 'package:buyonic/screens/login_screen.dart';
 import 'package:buyonic/screens/signup_screen.dart';
 import 'package:buyonic/screens/onboarding_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:buyonic/providers/favorite.dart';
 
-
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
-
-
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-
-FirebaseUser user;
+User user;
 String _type = '';
 
 class _MyAppState extends State<MyApp> {
   bool isUser = false;
 
-
-
   Future<void> _initCheck() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getBool('isLogin') != null){
+    if (prefs.getBool('isLogin') != null) {
       setState(() {
         isUser = prefs.getBool('isLogin');
         _type = prefs.getString('type');
       });
-       user = await FirebaseAuth.instance.currentUser();
+      user =  FirebaseAuth.instance.currentUser;
       print('isUser $isUser');
     }
   }
-
 
   @override
   void initState() {
@@ -48,19 +49,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Buyonic',
-      home: WaitingScreen(isUser),
-      routes: {
-        SignupScreen.routeName: (context) => SignupScreen(),
-        LoginScreen.routeName: (context) => LoginScreen(),
-        HomeScreen.routeName: (context) => HomeScreen(user, _type)
-      },
+    return ChangeNotifierProvider.value(
+      value: Favorite(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Buyonic',
+        home: WaitingScreen(isUser),
+        routes: {
+          SignupScreen.routeName: (context) => SignupScreen(),
+          LoginScreen.routeName: (context) => LoginScreen(),
+          HomeScreen.routeName: (context) => HomeScreen(user, _type),
+          ProfileScreen.routeName: (context) => ProfileScreen()
+        },
+      ),
     );
   }
 }
-
 
 class WaitingScreen extends StatefulWidget {
   final bool isUser;
@@ -80,7 +84,10 @@ class _WaitingScreenState extends State<WaitingScreen> {
           context,
           MaterialPageRoute(
               builder: (c) => widget.isUser == true
-                  ? HomeScreen(user, _type,)
+                  ? HomeScreen(
+                      user,
+                      _type,
+                    )
                   : LoginScreen()));
     });
   }
@@ -101,7 +108,6 @@ class _WaitingScreenState extends State<WaitingScreen> {
     );
   }
 }
-
 
 class ByonicApp extends StatefulWidget {
   @override
