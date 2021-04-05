@@ -1,10 +1,18 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:buyonic/screens/cart_screen.dart';
+import 'package:buyonic/screens/chat_screen.dart';
+import 'package:buyonic/screens/detail_screens/special_products_screens.dart';
+import 'package:buyonic/screens/shipment_screen.dart';
 import 'package:buyonic/screens/wishlist_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'file:///C:/Users/nasir/AndroidStudioProjects/buyonic/lib/screens/profile_screen.dart';
 import 'package:buyonic/widgets/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:buyonic/methods.dart';
 
 import 'welcome_screen.dart';
 
@@ -21,50 +29,157 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
-
-  // DocumentSnapshot _documentSnapshot;
-  // dynamic _photoURL;
-  // String _name;
   int _currentIndex = 0;
+  User currentUser;
+  int val = 0;
+  bool isInit = false;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  FlutterLocalNotificationsPlugin localNotification;
 
   final tabs = [
     WelcomeScreen(),
-    Center(
-      child: Text('Cart'),
-    ),
     WishListScreen(),
+    CartScreen(),
+    ShipmentScreen()
     // ProfileScreen(),
   ];
 
-  // final String email = 'email';
-  // final String google = 'google';
-  // final String facebook = 'facebook';
+  @override
+  void initState() {
+     currentUser =  FirebaseAuth.instance.currentUser;
+    _configureFirebaseListeners();
+    super.initState();
+  }
 
-  // Future<void> _getFbData() async {
-  //   _documentSnapshot = await Firestore.instance
-  //       .collection('Buyonic')
-  //       .document('Users')
-  //       .collection('Facebook')
-  //       .document(widget._user.uid)
-  //       .get();
-  //   if (_documentSnapshot.data != null) {
-  //     _photoURL = _documentSnapshot.data['profile_pic'];
-  //     _name = _documentSnapshot.data['name'];
-  //     print(_photoURL);
-  //     print(_name);
-  //   }
-  // }
+  Future _showNotification(String body, String message) async {
+    var androidDetails = AndroidNotificationDetails(
+        "channelId", "Local Notification", 'Description here',
+        importance: Importance.high);
+    var iOSDetails = IOSNotificationDetails();
+    var generalNotificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iOSDetails);
+    await localNotification.show(0, message == 'Order Confirmed' ?
+    'Your order has been confirmed!'
+        : message ==  'Special Product' ? 'Special Offer For You!'
+        : 'Admin',
+        message == 'Order Confirmed' ? 'Tap to check out details' :
+        body, generalNotificationDetails);
+  }
+
+  _configureFirebaseListeners() {
+    _firebaseMessaging.configure(
+        onMessage: (Map<String, dynamic> message) async {
+      var androidInitialize = AndroidInitializationSettings('ic_launcher');
+      var iOSInitialize = IOSInitializationSettings();
+      var initializationSettings = InitializationSettings(
+          android: androidInitialize, iOS: iOSInitialize);
+      localNotification = FlutterLocalNotificationsPlugin();
+      localNotification.initialize(initializationSettings,
+           onSelectNotification:
+           message['data']['message'] == 'Order Confirmed' ? onSelectShipmentNotification
+          : message['data']['message'] == 'Special Product' ? onSelectNotification
+          : null
+      );
+      String body = message['notification']['body'];
+      _showNotification(body, message['data']['message']);
+    },
+        onResume: (Map<String, dynamic> message) async {
+          if(message['data']['message'] == 'Order Confirmed'){
+            setState(() {
+              _currentIndex = 3;
+            });
+          }else if((message['data']['message'] == 'Special Product')) {
+            Navigator.push(context,
+                MaterialPageRoute(
+                    builder: (context) => SpecialProductsScreen()));
+          }else{
+            Navigator.push(context,
+                MaterialPageRoute(
+                    builder: (context) => ChattingScreen()));
+          }
+    },
+        onLaunch: (Map<String, dynamic> message) async {
+          if(message['data']['message'] == 'Order Confirmed'){
+
+          }else if((message['data']['message'] == 'Special Product')){
+            Navigator.push(context,
+                MaterialPageRoute(
+                    builder: (context) => SpecialProductsScreen()));
+          }else{
+            Navigator.push(context,
+                MaterialPageRoute(
+                    builder: (context) => ChattingScreen()));
+          }
+    });
+  }
+
+
+  Future onSelectNotification(String payLoad) async{
+    await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SpecialProductsScreen()));
+
+  }
+
+  Future onSelectChattingNotification(String payLoad) async{
+    await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ChattingScreen()));
+
+  }
+
+ Future onSelectShipmentNotification(String payLoad) async{
+    setState(() {
+      _currentIndex = 3;
+    });
+
+  }
 
   @override
-  void didChangeDependencies() {
-    if (widget._isType == 'google') {
-      print(widget._user.photoURL);
-      print('google');
-    } else if (widget._isType == 'email') {
-      print('email');
-    } else if (widget._isType == 'facebook') {
-      print('facebook');
+  Future<void> didChangeDependencies() async {
+    print('didChangeDependencies() called');
+    isInit = true;
+    if (isInit) {
+      // QuerySnapshot querySnapshot =
+      //     await FirebaseFirestore.instance.collection('DeviceTokens').get();
+      // _firebaseMessaging.getToken().then((deviceToken) async => {
+      //       if (querySnapshot.docs.length == 0)
+      //         {
+      //           await FirebaseFirestore.instance
+      //               .collection('DeviceTokens')
+      //               .add({
+      //             'device_token': deviceToken,
+      //           }),
+      //         },
+      //       for (int i = 0; i < querySnapshot.docs.length; i++)
+      //         {
+      //           if (deviceToken
+      //               .contains(querySnapshot.docs[i].get('device_token')))
+      //             {val = val + 1}
+      //         },
+      //       print('---- ${querySnapshot.docs.length}'),
+      //       if (querySnapshot.docs.length > 0)
+      //         {
+      //           if (val == 0)
+      //             {
+      //               await FirebaseFirestore.instance
+      //                   .collection('DeviceTokens')
+      //                   .add({
+      //                 'device_token': deviceToken,
+      //               }),
+      //             }
+      //         }
+      //     });
+      _firebaseMessaging.getToken().then((deviceToken) async => {
+                await FirebaseFirestore.instance
+                    .collection('DeviceTokens').doc(currentUser.uid)
+                    .set({
+                  'device_token': deviceToken,
+                }, SetOptions(merge: true)),
+
+        print("UID: $deviceToken")
+
+      });
     }
+    isInit = false;
     super.didChangeDependencies();
   }
 
@@ -76,10 +191,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _currentIndex == 0 ? ' Welcome'
-              : _currentIndex == 1 ? ' Cart'
-              : _currentIndex == 2 ? ' My Wishlist'
-              : 'Profile',
+          _currentIndex == 0
+              ? ' Welcome'
+              : _currentIndex == 1
+                  ? ' My Wishlist'
+                  : _currentIndex == 2
+                      ? 'Cart'
+                      : 'Shipments',
           style: TextStyle(
               color: Colors.black,
               fontFamily: 'Raleway',
@@ -108,24 +226,30 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             margin: EdgeInsets.only(right: 10),
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.pushNamed(context, ProfileScreen.routeName);
               },
-              child: widget._isType != 'email'? CircleAvatar(
-                radius: 25,
-                backgroundImage: NetworkImage(
-                  widget._user != null
-                      ? widget._user.photoURL
-                      : CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
-                ),
-              )
+              child: _currentIndex == 3 ? IconButton(
+                icon: Icon(Icons.message, color: Colors.black,),
+                onPressed: (){
+                  onMessageTap(context: context);
+                },
+              ) : widget._isType != 'Email'
+                  ? CircleAvatar(
+                      radius: 25,
+                      backgroundImage: NetworkImage(
+                        widget._user != null
+                            ? widget._user.photoURL
+                            : CircularProgressIndicator(
+                                backgroundColor: Colors.white,
+                              ),
+                      ),
+                    )
                   : Icon(
-                Icons.account_circle,
-                color: Colors.deepOrange,
-                size: 45,
-              ),
+                      Icons.account_circle,
+                      color: Colors.deepOrange,
+                      size: 45,
+                    ),
             ),
           ),
         ],
@@ -232,6 +356,14 @@ class _HomeScreenState extends State<HomeScreen> {
             BubbleBottomBarItem(
                 backgroundColor: Colors.black,
                 icon: Icon(
+                  Icons.favorite_border,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(Icons.favorite_border, color: Colors.white),
+                title: Text("Wishlist", style: bottomBarItemStyle)),
+            BubbleBottomBarItem(
+                backgroundColor: Colors.black,
+                icon: Icon(
                   Icons.add_shopping_cart,
                   color: Colors.black,
                 ),
@@ -240,11 +372,11 @@ class _HomeScreenState extends State<HomeScreen> {
             BubbleBottomBarItem(
                 backgroundColor: Colors.black,
                 icon: Icon(
-                  Icons.favorite_border,
+                  Icons.local_shipping_outlined,
                   color: Colors.black,
                 ),
-                activeIcon: Icon(Icons.favorite_border, color: Colors.white),
-                title: Text("Wishlist", style: bottomBarItemStyle)),
+                activeIcon: Icon(Icons.local_shipping_outlined, color: Colors.white),
+                title: Text("Shipment", style: bottomBarItemStyle)),
             // BubbleBottomBarItem(
             //     backgroundColor: Colors.black,
             //     icon: Icon(
@@ -259,17 +391,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Future<void> _logout(BuildContext context) async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.remove('isLogin');
-  //   await prefs.remove('type');
-  //   await FirebaseAuth.instance.signOut();
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  //   Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-  // }
+// Future<void> _logout(BuildContext context) async {
+//   setState(() {
+//     isLoading = true;
+//   });
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   await prefs.remove('isLogin');
+//   await prefs.remove('type');
+//   await FirebaseAuth.instance.signOut();
+//   setState(() {
+//     isLoading = false;
+//   });
+//   Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+// }
 }

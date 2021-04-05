@@ -1,19 +1,23 @@
 import 'package:buyonic/firebase_services/favorite.dart';
 import 'package:buyonic/methods.dart';
-import 'package:buyonic/screens/DetailScreen.dart';
+import 'package:buyonic/screens/detail_screen.dart';
 import 'package:buyonic/widgets/product_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-Widget detailBodyWidget({String collection}) {
+Widget detailBodyWidget({String collection, String searchString}) {
   final _fireStore = FirebaseFirestore.instance;
   return StreamBuilder<QuerySnapshot>(
-      stream: _fireStore
+      stream: (searchString == null || searchString.trim().toLowerCase() == '') ?
+      _fireStore
           .collection('Admin')
           .doc('Data')
           .collection(collection).orderBy('DateTime', descending: true)
-          .snapshots(),
+          .snapshots()
+          : _fireStore.collection('Admin').doc('Data').
+          collection(collection).where('SearchIndex', arrayContains: searchString).snapshots(),
+
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -40,7 +44,7 @@ Widget detailBodyWidget({String collection}) {
                       crossAxisSpacing: 1),
                   itemCount: snapshotData.length,
                   itemBuilder: (ctx, index) {
-                    return productCard(
+                    return productCard2(
                         context: context,
                         imageURL: snapshotData[index].get('ImageURL'),
                         productName: snapshotData[index].get('ProductName'),
@@ -52,6 +56,7 @@ Widget detailBodyWidget({String collection}) {
                                 true
                             ? snapshotData[index].get('OrignalPrice')
                             : '',
+                        tag: '${snapshotData[index].get('ImageURL')}$index',
                         isFav: isFavorite(snapshot: snapshotData[index]) ?? false,
                         onFavPress: () {
                           doFavorite(collection: collection, snapshot: snapshotData[index], context: context);
@@ -63,7 +68,10 @@ Widget detailBodyWidget({String collection}) {
                                   builder: (context) => DetailScreen(
                                       snapshot: snapshotData[index],
                                       collection: collection,
-                                      fav: isFavorite(snapshot: snapshotData[index]))));
+                                      fav: isFavorite(snapshot: snapshotData[index],),
+                                      tag:  '${snapshotData[index].get('ImageURL')}$index',
+                                      isAnim: true,
+                                  )));
                         });
                   },
                 ),

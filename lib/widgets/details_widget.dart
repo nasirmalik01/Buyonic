@@ -1,5 +1,6 @@
 import 'package:buyonic/widgets/Widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 Widget backIcon({BuildContext context, Widget iconButton}) {
   return Padding(
@@ -21,7 +22,7 @@ Widget backIcon({BuildContext context, Widget iconButton}) {
   );
 }
 
-Widget detailImageWidget({BuildContext context, String imageUrl}) {
+Widget detailImageWidget({BuildContext context, String imageUrl, String tag, bool isVal = false}) {
   return Center(
     child: Container(
       height: MediaQuery.of(context).size.height * 0.35,
@@ -32,7 +33,14 @@ Widget detailImageWidget({BuildContext context, String imageUrl}) {
             fit: BoxFit.fitWidth,
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: 1, minHeight: 1), // here
-              child: FadeInImage(
+              child:  isVal ? Hero(
+                tag: tag,
+                child: FadeInImage(
+                  placeholder: AssetImage('assets/images/placeholder.jpg'),
+                  image: NetworkImage(imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ): FadeInImage(
                 placeholder: AssetImage('assets/images/placeholder.jpg'),
                 image: NetworkImage(imageUrl),
                 fit: BoxFit.cover,
@@ -95,7 +103,10 @@ Widget addToCartWidget(
     {BuildContext context,
     String counter,
     Function onTapAdd,
-    Function onTapSub}) {
+    Function onTapSub,
+    Function onBtnPress,
+      bool isLoading = false
+    }) {
   return Padding(
       padding: const EdgeInsets.only(top: 10.0, left: 5, right: 5, bottom: 5),
       child: Container(
@@ -187,14 +198,14 @@ Widget addToCartWidget(
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: FlatButton.icon(
+                  child: isLoading ? SpinKitFadingCircle(color: Colors.white,) : FlatButton.icon(
                       height: MediaQuery.of(context).size.height * 0.07,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                           side: BorderSide(color: Color(0xFFFF5959))),
                       minWidth: MediaQuery.of(context).size.width * 0.85,
                       color: Color(0xFFFF5959),
-                      onPressed: () {},
+                      onPressed: onBtnPress,
                       icon: Icon(
                         Icons.add_shopping_cart_outlined,
                         color: Colors.white,

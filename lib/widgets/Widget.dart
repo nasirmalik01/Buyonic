@@ -159,6 +159,27 @@ Widget addInputField({
   );
 }
 
+
+Widget feedbackInputField({
+  TextEditingController controller,
+}) {
+  return TextFormField(
+    maxLines: 4,
+    textInputAction: TextInputAction.done,
+    controller: controller,
+    decoration: InputDecoration(
+      hintText: 'Type Your feedback here',
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black, width: 2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey, width: 1),
+      ),
+    ),
+    style: TextStyle(fontFamily: 'Raleway'),
+  );
+}
+
 Widget profileListTile(
     {String title,
     String subTitle,
@@ -257,6 +278,29 @@ Widget titleText({String title}) {
   );
 }
 
+Widget headingCart({String title, BuildContext context}) {
+  return Container(
+    margin: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.03),
+    child: Text(
+      title,
+      style: TextStyle(
+          fontFamily: 'Raleway', fontWeight: FontWeight.bold, fontSize: 17),
+    ),
+  );
+}
+
+Widget headingFeedback({String title, BuildContext context}) {
+  return Container(
+    margin: EdgeInsets.only(left: MediaQuery.of(context).size.width*0.03),
+    child: Text(
+      title,
+      style: TextStyle(
+          fontFamily: 'Raleway', fontWeight: FontWeight.bold, fontSize: 20),
+    ),
+  );
+}
+
+
 Widget quantityText({String title}) {
   return Text(
     title,
@@ -287,6 +331,26 @@ Widget titleText3({String title}) {
         color: Color(0xFFFF5222),
         fontWeight: FontWeight.bold,
         fontSize: 14),
+  );
+}
+
+Widget titleText5({String title}) {
+  return Text(
+    title,
+    style: TextStyle(
+        fontFamily: 'Nunito',
+        fontWeight: FontWeight.bold,
+        fontSize: 14),
+  );
+}
+
+Widget titleText6({String title}) {
+  return Text(
+    title,
+    style: TextStyle(
+        fontFamily: 'Nunito',
+        fontWeight: FontWeight.bold,
+        fontSize: 15),
   );
 }
 
@@ -322,5 +386,60 @@ Widget getInfo({String title, String prodInfo}) {
       ),
       Text(prodInfo),
     ],
+  );
+}
+
+
+Widget backgroundDismissibleCart() {
+  return Container(
+    color: Colors.red,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'Swipe to remove',
+            style: TextStyle(
+                color: Colors.white, fontFamily: 'Nunito', fontSize: 17),
+          ),
+          Icon(
+            Icons.delete,
+            color: Colors.white,
+            size: 30,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget searchBarTextField({Function onChanged}){
+  return TextField(
+    autofocus: true,
+    cursorColor: Colors.white,
+    style: TextStyle(
+        color: Colors.white,
+        fontFamily: 'Nunito',
+        fontSize: 17
+    ),
+    decoration: InputDecoration(
+      hintText: 'Search here',
+      border: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      // enabledBorder: UnderlineInputBorder(
+      //   borderSide: BorderSide(color: Colors.black),
+      // ),
+      // focusedBorder: UnderlineInputBorder(
+      //   borderSide: BorderSide(color: Colors.white),
+      // ),
+      hintStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 17
+      ),
+
+    ),
+    onChanged: onChanged,
   );
 }

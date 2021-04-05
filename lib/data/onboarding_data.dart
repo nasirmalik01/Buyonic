@@ -60,9 +60,9 @@ List<SliderModel> getSlides() {
   list.add(sliderModel);
   sliderModel = SliderModel();
 
-  sliderModel.setTitle('FRESH FRUITS AND VEGETABLES');
-  sliderModel.setsubTitle('Serving Excellent, Fresh and Superior quality ');
-  sliderModel.setImagePath('assets/images/healthyfood.png');
+  sliderModel.setTitle('ENJOY YOUR     SHOPPING');
+  sliderModel.setsubTitle('Get high quality products with secure payment');
+  sliderModel.setImagePath('assets/images/shopping2.png');
   list.add(sliderModel);
   sliderModel = SliderModel();
 

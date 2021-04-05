@@ -88,7 +88,7 @@ class _WaitingScreenState extends State<WaitingScreen> {
                       user,
                       _type,
                     )
-                  : LoginScreen()));
+                  : OnboardingScreen()));
     });
   }
 

@@ -21,16 +21,10 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  // final String email = 'email';
-  // final String google = 'google';
-  // final String facebook = 'facebook';
-
-  // Map<String, String> authValues = {'email': '', 'password': ''};
   TextEditingController passwordController = TextEditingController();
   final facebookLogin = FacebookLogin();
   bool passwordObscureText = true;
   bool confirmPasswordObscureText = true;
-
   bool isLoading = false;
 
   Widget textValues(
@@ -60,10 +54,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -442,10 +432,11 @@ class _SignupScreenState extends State<SignupScreen> {
             'Phone': 'Not set',
             'profile_pic' : 'http://med.gov.bz/wp-content/uploads/2020/08/dummy-profile-pic.jpg',
           });
+
         }
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLogin', true);
-        prefs.setString('type', 'email');
+        prefs.setString('type', 'Email');
 
         print('isLogin : ${prefs.getBool('isLogin')}');
 
@@ -456,7 +447,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(_user,'email'),
+              builder: (context) => HomeScreen(_user,'Email'),
             ));
       }
     } catch (e) {
@@ -533,19 +524,19 @@ class _SignupScreenState extends State<SignupScreen> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isLogin', true);
-      prefs.setString('type', 'google');
+      prefs.setString('type', 'Google');
 
       setState(() {
         isLoading = false;
       });
 
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeScreen(_userDetails, 'google')));
+          MaterialPageRoute(builder: (context) => HomeScreen(_userDetails, 'Google')));
 
       print('Signed in with google');
     } catch (e) {
       print(e);
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
+      Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
     }
@@ -595,22 +586,29 @@ class _SignupScreenState extends State<SignupScreen> {
         print('Fb Logged In');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLogin', true);
-        prefs.setString('type', 'facebook');
+        prefs.setString('type', 'Facebook');
 
         setState(() {
           isLoading = false;
         });
         Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => HomeScreen(_user, 'facebook',),
+          builder: (context) => HomeScreen(_user, 'Facebook',),
         ));
 
+        break;
 
-      // case FacebookLoginStatus.cancelledByUser:
-      //   setState(() => _isLoggedIn = false);
-      //   break;
-      // case FacebookLoginStatus.error:
-      //   setState(() => _isLoggedIn = false);
-      //   break;
+      case FacebookLoginStatus.cancelledByUser:
+        setState(() {
+          isLoading = false;
+        });
+        break;
+      case FacebookLoginStatus.error:
+        setState(() => isLoading = false);
+        _scaffoldKey.currentState.hideCurrentSnackBar();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('There is some Error. Try Again'),
+        ));
+        break;
     }
   }
 }

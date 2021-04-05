@@ -11,7 +11,6 @@ Future<void> doFavorite(
   User _user = FirebaseAuth.instance.currentUser;
   final id = snapshot.id;
   bool fav = false;
-
   Map<dynamic,dynamic> favSnapshot = snapshot.get('Favorites');
   int length= favSnapshot.values.length;
   List<dynamic> keys = favSnapshot.keys.toList();
@@ -21,6 +20,7 @@ Future<void> doFavorite(
     if(keys[i] == _user.uid){
       print(fav);
       fav = values[i];
+
     }
 
   }
@@ -51,6 +51,7 @@ Future<void> doFavorite(
       'Category': snapshot.get('Category'),
       'dateTime': DateTime.now(),
       'ProdId': id,
+      'Quantity': 1
     });
     showSnackbar(context: context, content: 'Added to Wishlist');
   }

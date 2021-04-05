@@ -1,3 +1,4 @@
+import 'package:buyonic/widgets/Widget.dart';
 import 'package:buyonic/widgets/detail_screen_body.dart';
 import 'package:flutter/material.dart';
 
@@ -7,10 +8,29 @@ class LaundryScreen extends StatefulWidget {
 }
 
 class _LaundryScreenState extends State<LaundryScreen> {
+  bool _isSearching = false;
+  String searchString;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Laundry and Household'),
+      appBar: AppBar(title:
+      !_isSearching ? Text('Laundry and HouseHold') : searchBarTextField(
+        onChanged: (String val){
+          setState(() {
+            searchString = val.toLowerCase();
+          });
+        }
+      ),
+        actions: [
+          IconButton(icon: Icon(_isSearching?Icons.cancel:
+          Icons.search), onPressed: (){
+            setState(() {
+              if(_isSearching == true) searchString=null;
+              _isSearching = !_isSearching;
+            });
+          })
+        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -18,7 +38,7 @@ class _LaundryScreenState extends State<LaundryScreen> {
                   end: Alignment.bottomRight,
                   colors: <Color>[Color(0xFFFF4828), Color(0xFFFE8D03)])),
         ),),
-      body:  detailBodyWidget(collection: 'laundry'),
+      body:  detailBodyWidget(collection: 'laundry', searchString: searchString),
     );
   }
 }

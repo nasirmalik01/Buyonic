@@ -401,7 +401,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isLogin', true);
-      prefs.setString('type', 'google');
+      prefs.setString('type', 'Google');
 
       setState(() {
         isLoading = false;
@@ -466,7 +466,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLogin', true);
-        prefs.setString('type', 'email');
+        prefs.setString('type', 'Email');
 
         print('isLogin : ${prefs.getBool('isLogin')}');
         setState(() {
@@ -555,7 +555,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Fb Logged In');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLogin', true);
-        prefs.setString('type', 'facebook');
+        prefs.setString('type', 'Facebook');
 
         setState(() {
           isLoading = false;
@@ -577,6 +577,7 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case FacebookLoginStatus.error:
         setState(() => isLoading = false);
+        _scaffoldKey.currentState.hideCurrentSnackBar();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text('There is some Error. Try Again'),
         ));

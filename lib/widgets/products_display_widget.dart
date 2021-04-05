@@ -1,5 +1,5 @@
 import 'package:buyonic/firebase_services/favorite.dart';
-import 'package:buyonic/screens/DetailScreen.dart';
+import 'package:buyonic/screens/detail_screen.dart';
 import 'package:buyonic/widgets/Widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buyonic/methods.dart';
@@ -27,6 +27,7 @@ Widget productsDisplayWidget({String collection, BuildContext context}) {
         }
 
         final snapshotData = snapshot.data.docs;
+
 
         return snapshotData.length == 0
             ? Center(
@@ -68,7 +69,8 @@ Widget productsDisplayWidget({String collection, BuildContext context}) {
                                       builder: (context) => DetailScreen(
                                           snapshot: snapshotData[0],
                                           collection: collec,
-                                          fav: isFavorite(snapshot: snapshotData[0]))));
+                                          fav: isFavorite(snapshot: snapshotData[0]),
+                                          )));
                             }),
                       if (snapshotData.length == 2 ||
                           snapshotData.length == 3 ||
@@ -97,7 +99,8 @@ Widget productsDisplayWidget({String collection, BuildContext context}) {
                                       builder: (context) => DetailScreen(
                                           snapshot: snapshotData[1],
                                           collection: collec,
-                                          fav: isFavorite(snapshot: snapshotData[1]))));
+                                          fav: isFavorite(snapshot: snapshotData[1]),
+                                        )));
                             }),
                       if (snapshotData.length == 3 || snapshotData.length > 3)
                         productCard(
@@ -125,7 +128,8 @@ Widget productsDisplayWidget({String collection, BuildContext context}) {
                                       builder: (context) => DetailScreen(
                                           snapshot: snapshotData[2],
                                           collection: collec,
-                                          fav: isFavorite(snapshot: snapshotData[2]))));
+                                          fav: isFavorite(snapshot: snapshotData[2]),
+                                        )));
                             })
                     ],
                   ),
