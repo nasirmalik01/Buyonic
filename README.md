@@ -14,4 +14,4 @@
 
  &nbsp;
   
-<img src="images/13.jpg" width=270, height:270>   &nbsp;  <img src="images/14.jpg" width=270, height:270>    
+<img src="images/13.jpg" width=270, height:270>   &nbsp;  <img src="images/14.jpg" width=270, height:270>    &nbsp;
